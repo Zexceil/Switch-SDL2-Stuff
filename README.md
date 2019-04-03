@@ -6,6 +6,8 @@ I've made this so people can understand programming with SDL2 on the Nintendo sw
 
 ## Future stuff:
 
+* Rotation.
+* Animation.
 * Implement audio loading and usage(Soon).
 * Using TTF (True type fonts, text)
 * Collision stuff.
