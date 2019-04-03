@@ -43,7 +43,7 @@ SOURCES		:=	source
 DATA		:=	data
 INCLUDES	:=	include
 ROMFS	    :=	romfs
-APP_VERSION :=  0.4.0
+APP_VERSION :=  0.4.7
 APP_AUTHOR  :=  Zexceil
 APP_TITLEID :=  SDL2Stuff
 
