@@ -12,8 +12,9 @@ typedef struct {
 	int y;
 } Player;
 
-//Used for + exit
-int exit;
+typedef struct {
+    int exit;
+} Status;
 
 //Setup a texture
 SDL_Texture* PlayerTex;
@@ -96,8 +97,8 @@ void LoadTextures(SDL_Renderer *renderer){
 }
 
 //All the controls stuff
-void Controls(Player *player, EStatus *Estatus){
-	
+void Controls(Player *player, Status *status){
+    
 	//States
 	u64 kDown = hidKeysDown(CONTROLLER_P1_AUTO);
 		
@@ -108,7 +109,7 @@ void Controls(Player *player, EStatus *Estatus){
 	//Scan for inputs
 	hidScanInput();
 	
-	if (kDown & KEY_PLUS) Estatus->exit = 1;
+	if (kDown & KEY_PLUS) status->exit = 1;
 		
 	if (kHeld & KEY_DLEFT) player->x--;
 		
@@ -152,27 +153,27 @@ int main(int argc, char *argv[])
 	Player player;
 	player.x = 0;
 	player.y = 0;
-	
-	EStatus Estatus;
-	Estatus.exit = 0;
-	
     
+    Status status;
+    status.exit = 0;
+	
+
 	//Call function to load in textures
 	LoadTextures(renderer);
 	
     //Make sure done is 0 so we can keep the loop running
 	int done = 0;
-	
+    
 	//Code that executes per frame
     while (!done) {
 		
 	//Process our events and render what we want to render
 	done = processEvents(window, &player);
-	Controls(&player, &Estatus);
+	Controls(&player, &status);
 	Render(renderer, &player);
 
 	//Used to break out of loop when plus pressed
-	if (Estatus.exit == 1){
+	if (status.exit == 1){
 		done = 1;
 		break;
 		}
