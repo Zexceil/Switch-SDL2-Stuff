@@ -12,13 +12,12 @@ typedef struct {
 	int y;
 } Player;
 
-//Hacky Slashy usage of struct to cause loop break.
-typedef struct {
-	int exit;
-} EStatus;
+//Used for + exit
+int exit;
 
 //Setup a texture
 SDL_Texture* PlayerTex;
+SDL_Texture* BackgroundTex;
 
 //Event processor
 int processEvents(SDL_Window *window, Player *player){
@@ -44,6 +43,15 @@ int processEvents(SDL_Window *window, Player *player){
 	return done;
 }
 
+//Put the stuff to init
+void Initializer(){
+    
+    romfsInit(); //Init the romfs for loading our image
+	SDL_Init(SDL_INIT_VIDEO); //Init SDL video
+    IMG_Init(IMG_INIT_PNG); //Init SDL IMG 
+}
+
+
 //Where we put all the stuff we want to render
 void Render(SDL_Renderer *renderer, Player *player){
 	
@@ -56,7 +64,7 @@ void Render(SDL_Renderer *renderer, Player *player){
     // fill window bounds
     SDL_SetRenderDrawColor(renderer, 111, 111, 111, 255);
     SDL_Rect f = {0, 0, w, h};
-    SDL_RenderFillRect(renderer, &f);
+	SDL_RenderCopy(renderer, BackgroundTex, NULL, &f);
 	
 	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 	SDL_Rect r = {player->x, player->y, 64, 64};
@@ -70,6 +78,22 @@ void Render(SDL_Renderer *renderer, Player *player){
     SDL_RenderPresent(renderer);
 	
 }	
+
+//Texture loading stuff
+void LoadTextures(SDL_Renderer *renderer){
+    
+    
+    
+    //Specify which image file to load into our pre made surface then we map it to a texture and free the surface
+    SDL_Surface* PlayerSurface = IMG_Load("romfs:assets/image/player.png"); 
+	SDL_Surface* BackgroundSurface = IMG_Load("romfs:assets/image/Background.png"); 
+	
+	PlayerTex = SDL_CreateTextureFromSurface(renderer, PlayerSurface);
+	BackgroundTex = SDL_CreateTextureFromSurface(renderer, BackgroundSurface);
+    
+	SDL_FreeSurface(PlayerSurface); 
+	SDL_FreeSurface(BackgroundSurface);
+}
 
 //All the controls stuff
 void Controls(Player *player, EStatus *Estatus){
@@ -103,12 +127,10 @@ int main(int argc, char *argv[])
 	
     SDL_Window *window;
     SDL_Renderer *renderer;
-    int w = 1920, h = 1080;
 	
-	romfsInit(); //Init the romfs for loading our image
-	SDL_Init(SDL_INIT_VIDEO); //Init SDL video
-	IMG_Init(IMG_INIT_PNG); //Init SDL IMG 
-	
+    //Init everything
+	Initializer();
+    
 	//Create the window we're going to render our SDL2 stuff in
 	window = SDL_CreateWindow("Window1",
 	                          SDL_WINDOW_FULLSCREEN,
@@ -135,11 +157,10 @@ int main(int argc, char *argv[])
 	Estatus.exit = 0;
 	
     
-	//Specify which image file to load into our pre made surface then we map it to a texture and free the surface
-	SDL_Surface* PlayerSurface = IMG_Load("romfs:assets/image/player.png"); 
-	PlayerTex = SDL_CreateTextureFromSurface(renderer, PlayerSurface);
-	SDL_FreeSurface(PlayerSurface); 
+	//Call function to load in textures
+	LoadTextures(renderer);
 	
+    //Make sure done is 0 so we can keep the loop running
 	int done = 0;
 	
 	//Code that executes per frame
@@ -149,7 +170,7 @@ int main(int argc, char *argv[])
 	done = processEvents(window, &player);
 	Controls(&player, &Estatus);
 	Render(renderer, &player);
-	
+
 	//Used to break out of loop when plus pressed
 	if (Estatus.exit == 1){
 		done = 1;
