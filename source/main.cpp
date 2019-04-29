@@ -5,6 +5,7 @@
 #include <SDL2/SDL_events.h>
 #include <SDL2/SDL_image.h>
 #include <switch.h>
+#include "init.h"
 
 //Our player struct
 typedef struct {
@@ -45,12 +46,6 @@ int processEvents(SDL_Window *window, Player *player){
 }
 
 //Put the stuff to init
-void Initializer(){
-    
-    romfsInit(); //Init the romfs for loading our image
-	SDL_Init(SDL_INIT_VIDEO); //Init SDL video
-    IMG_Init(IMG_INIT_PNG); //Init SDL IMG 
-}
 
 
 //Where we put all the stuff we want to render
@@ -125,12 +120,13 @@ void Controls(Player *player, Status *status){
 //Init window and renderer; main loop
 int main(int argc, char *argv[])
 {
+	Initializer init;
 	
     SDL_Window *window;
     SDL_Renderer *renderer;
 	
     //Init everything
-	Initializer();
+	init.Init();
     
 	//Create the window we're going to render our SDL2 stuff in
 	window = SDL_CreateWindow("Window1",
